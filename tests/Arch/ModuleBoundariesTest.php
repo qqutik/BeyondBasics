@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+use App\Modules\Identity\DTO\BaseDTO;
+use App\Modules\Identity\Services\EmailVerificationService;
 
 /*
 |--------------------------------------------------------------------------
@@ -8,13 +10,13 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 |
 | Every module lives in app/Modules/<Name>. Other modules may only use its
-| public surface: Contracts (interfaces), DTO and Events. Everything else
+| public surface: Contracts (interfaces), DTO, Enums and Events. Everything else
 | (Models, Services, Repositories, Http, Listeners, Database, Providers...)
 | is internal to the module and must not be referenced from outside.
 |
 */
 
-const PUBLIC_MODULE_LAYERS = ['Contracts', 'DTO', 'Events'];
+const PUBLIC_MODULE_LAYERS = ['Contracts', 'DTO', 'Enums', 'Events'];
 
 /**
  * @return list<string>
@@ -54,6 +56,12 @@ foreach (moduleNames() as $module) {
     arch("{$module} module contracts are interfaces")
         ->expect("App\\Modules\\{$module}\\Contracts")
         ->toBeInterfaces();
+
+    arch("{$module} module DTOs extend BaseDTO")
+        ->expect("App\\Modules\\{$module}\\DTO")
+        ->classes()
+        ->toExtend(BaseDTO::class)
+        ->ignoring(BaseDTO::class);
 }
 
 arch('code outside modules does not use module internals')
@@ -65,4 +73,5 @@ arch('application code uses strict types')
     ->toUseStrictTypes();
 
 arch()->preset()->php();
-arch()->preset()->security();
+// sha1 is required by Laravel's email verification link format (VerifyEmail uses sha1(email)).
+arch()->preset()->security()->ignoring(EmailVerificationService::class);
