@@ -10,4 +10,7 @@ parameters:
         - database
         - routes
         - tests
+    excludePaths:
+        # Pest arch() DSL is built on __call magic that PHPStan cannot type
+        - tests/Arch
     tmpDir: storage/framework/phpstan
