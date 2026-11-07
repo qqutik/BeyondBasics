@@ -18,8 +18,13 @@ final readonly class UserRepository
         ]);
     }
 
-    public function findById(int $id): ?User
+    public function findOneById(int $userId): ?User
     {
-        return User::query()->find($id);
+        return User::query()->with('roles')->find($userId);
+    }
+
+    public function findOneByUuid(string $uuid): ?User
+    {
+        return User::query()->with('roles')->where('uuid', $uuid)->first();
     }
 }

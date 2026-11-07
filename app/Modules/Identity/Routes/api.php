@@ -31,4 +31,9 @@ Route::get('auth/email/verify/{id}/{hash}', [EmailVerificationController::class,
     ->whereNumber('id')
     ->name('verification.verify');
 
-Route::middleware('auth:api')->get('me', [UserController::class, 'me'])->name('identity.me');
+Route::prefix('user')->middleware('auth:api')->group(function (): void {
+
+    Route::get('me', [UserController::class, 'me']);
+    Route::put('profile', [UserController::class, 'profile'])->middleware('role:author');
+
+});

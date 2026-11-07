@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Identity\Services;
 
 use App\Modules\Identity\DTO\User\UserCreateDTO;
+use App\Modules\Identity\DTO\User\UserProfileDTO;
 use App\Modules\Identity\Enums\Role;
 use App\Modules\Identity\Events\UserRegisteredEvent;
 use App\Modules\Identity\Models\User;
+use App\Modules\Identity\Models\UserProfile;
 use App\Modules\Identity\Repository\UserRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -45,5 +47,10 @@ final readonly class UserService
     {
         // Query-level update: no model events, no updated_at bump, no race with other attribute changes.
         User::query()->whereKey($user->id)->update(['last_login_at' => now()]);
+    }
+
+    public function syncProfile(UserProfileDTO $DTO, User $user): UserProfile
+    {
+        return UserProfile::query()->updateOrCreate(['user_id' => $user->id], $DTO->toArray());
     }
 }

@@ -28,4 +28,5 @@ Thumbs.db
 
 # Local AI assistant instructions
 /CLAUDE.md
+/MODULES_PLAN.md
 /storage/framework/phpstan

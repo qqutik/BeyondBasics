@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Identity\Providers;
 
+use App\Modules\Identity\Contracts\UserDirectoryContract;
+use App\Modules\Identity\Http\Middleware\RoleMiddleware;
 use App\Modules\Identity\Listeners\RecordLastLoginListener;
+use App\Modules\Identity\Services\UserDirectoryService;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
@@ -20,7 +24,7 @@ final class IdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(UserDirectoryContract::class, UserDirectoryService::class);
     }
 
     public function boot(): void
@@ -29,7 +33,7 @@ final class IdentityServiceProvider extends ServiceProvider
 
         Route::middleware('api')
             ->prefix('api')
-            ->group(__DIR__ . '/../Routes/api.php');
+            ->group(__DIR__.'/../Routes/api.php');
 
         Event::listen(Login::class, RecordLastLoginListener::class);
 
@@ -50,5 +54,7 @@ final class IdentityServiceProvider extends ServiceProvider
                 'email' => $user instanceof CanResetPassword ? $user->getEmailForPasswordReset() : '',
             ]);
         });
+
+        $this->app->make(Router::class)->aliasMiddleware('role', RoleMiddleware::class);
     }
 }
