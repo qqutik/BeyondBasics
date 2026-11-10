@@ -35,4 +35,12 @@ final class Category extends Model
     {
         return $this->hasMany(self::class, 'parent_id')->orderBy('position');
     }
+
+    /**
+     * @return HasMany<Course, $this>
+     */
+    public function courses(): HasMany
+    {
+        return $this->hasMany(Course::class);
+    }
 }
