@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Catalog\DTO\Category;
 
 use App\Modules\Catalog\DTO\BaseDTO;

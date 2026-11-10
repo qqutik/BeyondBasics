@@ -36,7 +36,7 @@ final class CategoryIndexRequest extends FormRequest
         return new CategoryFilterDTO(
             name: $this->filled('name') ? $this->string('name')->trim()->toString() : null,
             parentId: $this->filled('parent_id') ? $this->integer('parent_id') : null,
-            isActive: $this->has('is_active') ? $this->boolean('is_active') : null,
+            isActive: $this->filled('is_active') ? $this->boolean('is_active') : null,
             perPage: min(
                 $this->integer('per_page', Config::integer('catalog.pagination.per_page')),
                 Config::integer('catalog.pagination.max_per_page'),

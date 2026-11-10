@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-use App\Modules\Identity\DTO\BaseDTO;
+
 use App\Modules\Identity\Services\EmailVerificationService;
 
 /*
@@ -57,11 +57,14 @@ foreach (moduleNames() as $module) {
         ->expect("App\\Modules\\{$module}\\Contracts")
         ->toBeInterfaces();
 
-    arch("{$module} module DTOs extend BaseDTO")
+    // Each module has its own BaseDTO (App\Modules\<Module>\DTO\BaseDTO); DTOs never extend another module's base.
+    $moduleBaseDto = "App\\Modules\\{$module}\\DTO\\BaseDTO";
+
+    arch("{$module} module DTOs extend the module's own BaseDTO")
         ->expect("App\\Modules\\{$module}\\DTO")
         ->classes()
-        ->toExtend(BaseDTO::class)
-        ->ignoring(BaseDTO::class);
+        ->toExtend($moduleBaseDto)
+        ->ignoring($moduleBaseDto);
 }
 
 arch('code outside modules does not use module internals')

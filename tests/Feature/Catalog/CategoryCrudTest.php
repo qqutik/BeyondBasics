@@ -197,4 +197,12 @@ describe('index filters', function () {
 
         expect($names)->toBe(['PHP']);
     });
+
+    it('does not filter by is_active when the value is empty', function () {
+        ['headers' => $headers] = categoryFixture();
+        Category::query()->create(['name' => 'Hidden', 'slug' => 'hidden', 'position' => 2, 'is_active' => false]);
+
+        getJson('/api/category?is_active=', $headers)->assertOk()->assertJsonCount(3, 'data');
+        getJson('/api/category?is_active=0', $headers)->assertOk()->assertJsonCount(1, 'data');
+    });
 });
