@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Models;
 
-use App\Modules\Catalog\Filters\Category\CategorySearch;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 
 /**
  * @property int $id
@@ -37,10 +34,5 @@ final class Category extends Model
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->orderBy('position');
-    }
-
-    public function scopeSearch(Builder $builder, Request $request): Builder
-    {
-        return new CategorySearch()->apply($request, $builder);
     }
 }
