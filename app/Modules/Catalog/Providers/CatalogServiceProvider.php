@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Providers;
 
+use App\Modules\Catalog\Events\CourseDeclinedEvent;
+use App\Modules\Catalog\Events\CoursePublishedEvent;
+use App\Modules\Catalog\Listeners\CourseMailListener;
+use App\Modules\Catalog\Services\Audit\AuditContract;
+use App\Modules\Catalog\Services\Audit\AuditLogService;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,6 +18,8 @@ final class CatalogServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../Config/catalog.php', 'catalog');
+
+        $this->app->bind(AuditContract::class, AuditLogService::class);
     }
 
     public function boot(): void
@@ -21,5 +29,9 @@ final class CatalogServiceProvider extends ServiceProvider
             ->group(__DIR__.'/../Routes/api.php');
 
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+
+        Event::listen(CoursePublishedEvent::class, CourseMailListener::class);
+
+        Event::listen(CourseDeclinedEvent::class, CourseMailListener::class);
     }
 }

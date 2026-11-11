@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Catalog\Http\Requests;
+namespace App\Modules\Catalog\Http\Requests\Category;
 
 use App\Modules\Catalog\DTO\Category\CategoryStoreDTO;
 use Illuminate\Contracts\Validation\ValidationRule;

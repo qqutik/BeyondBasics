@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Http\Controllers;
 
-use App\Modules\Catalog\Http\Requests\CategoryIndexRequest;
-use App\Modules\Catalog\Http\Requests\CategoryStoreRequest;
-use App\Modules\Catalog\Http\Requests\CategoryUpdateRequest;
+use App\Modules\Catalog\Http\Requests\Category\CategoryIndexRequest;
+use App\Modules\Catalog\Http\Requests\Category\CategoryStoreRequest;
+use App\Modules\Catalog\Http\Requests\Category\CategoryUpdateRequest;
 use App\Modules\Catalog\Http\Resources\CategoryResource;
 use App\Modules\Catalog\Models\Category;
 use App\Modules\Catalog\Services\CategoryService;

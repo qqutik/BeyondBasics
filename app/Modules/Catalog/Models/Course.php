@@ -8,15 +8,19 @@ use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
 use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
+use App\Modules\Catalog\Policies\CoursePolicy;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * @property int $id
@@ -38,12 +42,15 @@ use Illuminate\Support\Carbon;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  * @property-read Category|null $category
+ * @property-read Collection<int, CourseVersion> $versions
+ * @property-read CourseVersion|null $publishedVersion
  */
 #[Fillable([
     'user_id', 'category_id', 'slug', 'title', 'subtitle', 'description',
     'level', 'language', 'price', 'currency',
 ])]
 #[Hidden(['id'])]
+#[UsePolicy(CoursePolicy::class)]
 final class Course extends Model
 {
     // uuid is generated on create; soft delete keeps the course for students who already bought it.
@@ -81,6 +88,22 @@ final class Course extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return HasMany<CourseVersion, $this>
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(CourseVersion::class);
+    }
+
+    /**
+     * @return BelongsTo<CourseVersion, $this>
+     */
+    public function publishedVersion(): BelongsTo
+    {
+        return $this->belongsTo(CourseVersion::class, 'published_version_id');
     }
 
     public function isDraft(): bool
