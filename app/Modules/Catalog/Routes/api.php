@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Modules\Catalog\Http\Controllers\CategoryController;
 use App\Modules\Catalog\Http\Controllers\CourseController;
 use App\Modules\Catalog\Http\Controllers\CourseStatusController;
+use App\Modules\Catalog\Http\Controllers\CurriculumController;
+use App\Modules\Catalog\Http\Controllers\LessonController;
 use App\Modules\Catalog\Http\Controllers\SectionController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,21 +15,30 @@ Route::middleware('auth:api')->group(function (): void {
     Route::apiResource('category', CategoryController::class);
     Route::apiResource('course', CourseController::class);
 
-    Route::prefix('course/{course}')
-        ->controller(CourseStatusController::class)
-        ->group(function (): void {
+    Route::prefix('course/{course}')->group(function (): void {
 
-            Route::post('submit', 'submit');
-            Route::post('archive', 'archive');
+        Route::post('submit', [CourseStatusController::class, 'submit']);
+        Route::post('archive', [CourseStatusController::class, 'archive']);
+        Route::post('approve', [CourseStatusController::class, 'approve']);
+        Route::post('reject', [CourseStatusController::class, 'reject']);
+        Route::post('restore', [CourseStatusController::class, 'restore']);
 
-            Route::post('approve', 'approve');
-            Route::post('reject', 'reject');
-            Route::post('restore', 'restore');
+        // the whole order of sections and lessons in one request, see CurriculumUpdateRequest
+        Route::put('curriculum', [CurriculumController::class, 'update']);
 
-            Route::post('sections', [SectionController::class, 'store']);
-            Route::put('sections/order', [SectionController::class, 'reorder']);
-            Route::put('sections/{section}', [SectionController::class, 'update']);
-            Route::delete('sections/{section}', [SectionController::class, 'destroy']);
-        });
+        Route::post('section', [SectionController::class, 'store']);
+        Route::put('section/{section}', [SectionController::class, 'update']);
+        Route::delete('section/{section}', [SectionController::class, 'destroy']);
+
+        Route::prefix('section/{section}')
+            ->scopeBindings()
+            ->controller(LessonController::class)
+            ->group(function (): void {
+                Route::post('lesson', 'store');
+                Route::put('lesson/{lesson}', 'update');
+                Route::delete('lesson/{lesson}', 'destroy');
+            });
+
+    });
 
 });

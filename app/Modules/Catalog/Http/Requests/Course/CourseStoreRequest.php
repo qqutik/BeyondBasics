@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Http\Requests\Course;
 
-use App\Modules\Catalog\DTO\Category\CategoryFilterDTO;
 use App\Modules\Catalog\DTO\Course\CourseStoreDTO;
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
@@ -13,7 +12,6 @@ use App\Modules\Catalog\Enums\LanguageEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\Rule;
 
 final class CourseStoreRequest extends FormRequest

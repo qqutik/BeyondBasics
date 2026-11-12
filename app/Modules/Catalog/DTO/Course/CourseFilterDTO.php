@@ -22,8 +22,6 @@ final class CourseFilterDTO extends BaseDTO
         public readonly ?string $language,
         public readonly ?string $status,
 
-        public readonly int     $perPage,
-    )
-    {
-    }
+        public readonly int $perPage,
+    ) {}
 }

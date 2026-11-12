@@ -11,11 +11,11 @@ final class LikeHelper
      */
     public static function contains(string $value): string
     {
-        return '%' . addcslashes($value, '\\%_') . '%';
+        return '%'.addcslashes($value, '\\%_').'%';
     }
 
     public static function startsWith(string $value): string
     {
-        return addcslashes($value, '\\%_') . '%';
+        return addcslashes($value, '\\%_').'%';
     }
 }

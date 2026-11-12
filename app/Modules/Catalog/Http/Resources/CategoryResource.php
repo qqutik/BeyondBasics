@@ -8,7 +8,6 @@ use App\Modules\Catalog\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-
 final class CategoryResource extends JsonResource
 {
     /**

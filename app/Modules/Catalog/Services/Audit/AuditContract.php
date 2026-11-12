@@ -9,5 +9,4 @@ use App\Modules\Catalog\DTO\Audit\AuditDTO;
 interface AuditContract
 {
     public function log(AuditDTO $DTO): void;
-
 }

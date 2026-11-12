@@ -10,12 +10,13 @@ use App\Modules\Catalog\Http\Requests\Category\CategoryUpdateRequest;
 use App\Modules\Catalog\Http\Resources\CategoryResource;
 use App\Modules\Catalog\Models\Category;
 use App\Modules\Catalog\Services\CategoryService;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final class CategoryController
 {
     public function __construct(private readonly CategoryService $categoryService) {}
 
-    public function index(CategoryIndexRequest $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(CategoryIndexRequest $request): AnonymousResourceCollection
     {
         $categories = $this->categoryService->findAll($request->toDTO());
 

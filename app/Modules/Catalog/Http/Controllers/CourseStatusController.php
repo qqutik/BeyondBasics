@@ -20,11 +20,12 @@ final readonly class CourseStatusController
     {
         Gate::authorize('submit', $course);
 
-        if ($course->status !== CourseStatusEnum::DRAFT){
+        if ($course->status !== CourseStatusEnum::DRAFT) {
             return throw new \Exception('Course must be in draft status');
         }
 
         $course = $this->service->submit($course);
+
         return new CourseResource($course);
     }
 
@@ -32,11 +33,12 @@ final readonly class CourseStatusController
     {
         Gate::authorize('archive', $course);
 
-        if ($course->status === CourseStatusEnum::ARCHIVED){
+        if ($course->status === CourseStatusEnum::ARCHIVED) {
             return throw new \Exception('Course is already archived');
         }
 
-        $course =  $this->service->archive($course);
+        $course = $this->service->archive($course);
+
         return new CourseResource($course);
     }
 
@@ -44,11 +46,12 @@ final readonly class CourseStatusController
     {
         Gate::authorize('approve', $course);
 
-        if ($course->status !== CourseStatusEnum::REVIEW){
+        if ($course->status !== CourseStatusEnum::REVIEW) {
             return throw new \Exception('Course must be in review status');
         }
 
         $course = $this->service->approve($course, Auth::user()->id);
+
         return new CourseResource($course);
     }
 
@@ -56,11 +59,12 @@ final readonly class CourseStatusController
     {
         Gate::authorize('reject', $course);
 
-        if ($course->status !== CourseStatusEnum::REVIEW){
+        if ($course->status !== CourseStatusEnum::REVIEW) {
             return throw new \Exception('Course must be in review status');
         }
 
         $course = $this->service->reject($course, Auth::user()->id, $request->reason);
+
         return new CourseResource($course);
     }
 
@@ -68,12 +72,12 @@ final readonly class CourseStatusController
     {
         Gate::authorize('restore', $course);
 
-        if ($course->status !== CourseStatusEnum::ARCHIVED){
+        if ($course->status !== CourseStatusEnum::ARCHIVED) {
             return throw new \Exception('Course must be in archive status');
         }
 
-        $course =  $this->service->restore($course);
+        $course = $this->service->restore($course);
+
         return new CourseResource($course);
     }
-
 }

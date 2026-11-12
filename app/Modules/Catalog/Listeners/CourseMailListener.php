@@ -12,7 +12,6 @@ final readonly class CourseMailListener implements ShouldDispatchAfterCommit
 {
     public function handle(CoursePublishedEvent|CourseDeclinedEvent $event)
     {
-        //send mail
+        // send mail
     }
-
 }

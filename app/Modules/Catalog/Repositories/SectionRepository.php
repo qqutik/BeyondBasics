@@ -41,14 +41,17 @@ final class SectionRepository
     }
 
     /**
+     * Editor view of the structure: sections in order, each with its lessons in order (Section::lessons() is ordered).
+     *
      * @return Collection<int, Section>
      */
-    public function findAllByCourse(Course $course): Collection
+    public function findAllByCourseWithLessons(Course $course): Collection
     {
         return Section::query()
             ->where('course_id', $course->id)
             ->orderBy('position')
             ->orderBy('id')
+            ->with('lessons')
             ->get();
     }
 

@@ -11,7 +11,7 @@ final class CategoryStoreDTO extends BaseDTO
     private string $slug;
 
     public function __construct(
-        public readonly int|null $parent_id,
+        public readonly ?int $parent_id,
         public readonly string $name,
         public readonly bool $is_active,
         public readonly int $position,
@@ -20,6 +20,7 @@ final class CategoryStoreDTO extends BaseDTO
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 

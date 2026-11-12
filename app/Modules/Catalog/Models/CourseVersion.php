@@ -19,7 +19,6 @@ use Illuminate\Support\Carbon;
 #[Fillable(['course_id', 'snapshot', 'published_at'])]
 final class CourseVersion extends Model
 {
-
     public const null UPDATED_AT = null;
 
     /**
@@ -30,7 +29,7 @@ final class CourseVersion extends Model
         return [
             'snapshot' => 'array',
             'version' => 'integer',
-            'published_at' => 'datetime'
+            'published_at' => 'datetime',
         ];
     }
 

@@ -11,7 +11,6 @@ use App\Modules\Catalog\Models\Category;
 use App\Modules\Catalog\Repositories\CategoryRepository;
 use App\Modules\Catalog\Traits\SlugTrait;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 
@@ -23,7 +22,7 @@ final readonly class CategoryService
 
     public function findAll(CategoryFilterDTO $DTO): LengthAwarePaginator
     {
-       return $this->repository->findAll($DTO);
+        return $this->repository->findAll($DTO);
     }
 
     public function findOneById(int $id): ?Category
@@ -68,11 +67,11 @@ final readonly class CategoryService
      */
     public function destroy(Category $category): Category
     {
-            if ($this->repository->hasChildren($category->id)) {
-                throw ValidationException::withMessages([
-                    'category' => 'The category has subcategories. Move or delete them first.',
-                ]);
-            }
+        if ($this->repository->hasChildren($category->id)) {
+            throw ValidationException::withMessages([
+                'category' => 'The category has subcategories. Move or delete them first.',
+            ]);
+        }
 
         return $this->repository->destroy($category);
     }

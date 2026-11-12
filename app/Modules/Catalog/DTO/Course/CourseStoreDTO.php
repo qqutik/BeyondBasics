@@ -23,13 +23,12 @@ final class CourseStoreDTO extends BaseDTO
         public readonly string $level,
         public readonly string $language,
         public readonly string $status,
-    )
-    {
-    }
+    ) {}
 
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 

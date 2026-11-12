@@ -20,7 +20,6 @@ final readonly class CoursePolicy
         return $course->isOwnedBy($this->getUserId($user)) || $this->isAdmin($user);
     }
 
-
     public function submit(Authenticatable $user, Course $course): bool
     {
         return $course->isOwnedBy($this->getUserId($user));
@@ -30,8 +29,6 @@ final readonly class CoursePolicy
     {
         return $course->isOwnedBy($this->getUserId($user)) || $this->isAdmin($user);
     }
-
-
 
     public function approve(Authenticatable $user, Course $course): bool
     {
@@ -47,8 +44,6 @@ final readonly class CoursePolicy
     {
         return $course->isOwnedBy($this->getUserId($user)) || $this->isAdmin($user);
     }
-
-
 
     private function isAdmin(Authenticatable $user): bool
     {

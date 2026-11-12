@@ -10,10 +10,8 @@ final class CategoryFilterDTO extends BaseDTO
 {
     public function __construct(
         public readonly ?string $name,
-        public readonly ?int    $parentId,
-        public readonly ?bool   $isActive,
-        public readonly int     $perPage,
-    )
-    {
-    }
+        public readonly ?int $parentId,
+        public readonly ?bool $isActive,
+        public readonly int $perPage,
+    ) {}
 }

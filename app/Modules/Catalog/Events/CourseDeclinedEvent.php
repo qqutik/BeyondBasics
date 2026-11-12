@@ -6,8 +6,6 @@ namespace App\Modules\Catalog\Events;
 
 final readonly class CourseDeclinedEvent
 {
-    public function __construct(public int $courseId)
-    {
-    }
+    public function __construct(public int $courseId) {}
 
 }

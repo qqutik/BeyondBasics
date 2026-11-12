@@ -38,17 +38,17 @@ final class CourseIndexRequest extends FormRequest
 
             'level' => ['sometimes', Rule::enum(CourseLevelEnum::class)],
             'language' => ['sometimes', Rule::enum(LanguageEnum::class)],
-//            'currency' => ['sometimes', Rule::enum(CurrencyEnum::class)],
+            //            'currency' => ['sometimes', Rule::enum(CurrencyEnum::class)],
             'status' => ['sometimes', Rule::enum(CourseStatusEnum::class)],
 
             'page' => ['nullable', 'integer', 'min:1'],
-            'per_page'  => ['nullable', 'integer', 'min:1', 'max:100'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
 
     public function toDTO(): CourseFilterDTO
     {
-        return  new CourseFilterDTO(
+        return new CourseFilterDTO(
             user_id: $this->integer('user_id'),
             category_id: $this->integer('category_id'),
 
@@ -66,4 +66,3 @@ final class CourseIndexRequest extends FormRequest
         );
     }
 }
-

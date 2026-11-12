@@ -42,6 +42,7 @@ use Illuminate\Support\Collection;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  * @property-read Category|null $category
+ * @property-read Collection<int, Section> $sections
  * @property-read Collection<int, CourseVersion> $versions
  * @property-read CourseVersion|null $publishedVersion
  */
@@ -88,6 +89,17 @@ final class Course extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Also used by scopeBindings(): course/{course}/section/{section} resolves {section} through this relation,
+     * so a section of another course gives 404.
+     *
+     * @return HasMany<Section, $this>
+     */
+    public function sections(): HasMany
+    {
+        return $this->hasMany(Section::class)->orderBy('position');
     }
 
     /**

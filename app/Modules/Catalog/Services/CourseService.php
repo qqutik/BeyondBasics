@@ -59,7 +59,7 @@ final readonly class CourseService
 
     public function generateSnapshot(Course $course): CourseVersion
     {
-        $courseVersion = new CourseVersion();
+        $courseVersion = new CourseVersion;
         $courseVersion->course_id = $course->id;
         $courseVersion->snapshot = $course->toArray();
         $courseVersion->published_at = now();
@@ -67,5 +67,13 @@ final readonly class CourseService
         $courseVersion->save();
 
         return $courseVersion;
+    }
+
+    /**
+     * Locks the course row until the end of the current transaction.
+     */
+    public function lockForUpdate(Course $course): void
+    {
+        $this->repository->lockForUpdate($course);
     }
 }

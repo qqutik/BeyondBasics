@@ -15,16 +15,14 @@ use Illuminate\Validation\ValidationException;
 
 final readonly class CourseStatusService
 {
-
-    public function __construct(private CourseService $courseService, private AuditContract $auditContract)
-    {
-    }
+    public function __construct(private CourseService $courseService, private AuditContract $auditContract) {}
 
     public function submit(Course $course): ?Course
     {
-            if (!$this->assertReadyForReview()){
-                return throw new \Exception('Course is not ready for review');
-            }
+        if (! $this->assertReadyForReview()) {
+            return throw new \Exception('Course is not ready for review');
+        }
+
         return $this->transition($course, CourseStatusEnum::REVIEW);
     }
 
@@ -35,19 +33,21 @@ final readonly class CourseStatusService
 
     public function approve(Course $course, int $adminId): ?Course
     {
-        $result =  $this->transition($course, CourseStatusEnum::PUBLISHED, CoursePublishedEvent::class);
-            if($result){
-                $this->generateLog($adminId, 'Course approved', $course);
-            }
+        $result = $this->transition($course, CourseStatusEnum::PUBLISHED, CoursePublishedEvent::class);
+        if ($result) {
+            $this->generateLog($adminId, 'Course approved', $course);
+        }
+
         return $result;
     }
 
     public function reject(Course $course, int $adminId, string $reason): ?Course
     {
         $result = $this->transition($course, CourseStatusEnum::DECLINED, CourseDeclinedEvent::class);
-            if($result){
-                $this->generateLog($adminId, 'Course rejected: '.$reason, $course);
-            }
+        if ($result) {
+            $this->generateLog($adminId, 'Course rejected: '.$reason, $course);
+        }
+
         return $result;
     }
 
@@ -68,7 +68,7 @@ final readonly class CourseStatusService
                 additional: null,
                 channel: null,
             ));
-        }catch (\Throwable $exception){
+        } catch (\Throwable $exception) {
 
         }
     }
@@ -93,7 +93,7 @@ final readonly class CourseStatusService
                 ]);
             }
 
-            if($status === CourseStatusEnum::PUBLISHED){
+            if ($status === CourseStatusEnum::PUBLISHED) {
                 $version = $this->courseService->generateSnapshot($course);
                 $course->published_version_id = $version->id;
                 $course->published_at = now();

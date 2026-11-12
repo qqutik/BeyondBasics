@@ -18,7 +18,5 @@ final class AuditDTO extends BaseDTO
         public readonly ?array $additional,
 
         public readonly ?string $channel,
-    )
-    {
-    }
+    ) {}
 }

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Http\Controllers;
 
-use App\Modules\Catalog\Http\Requests\Section\SectionReorderRequest;
 use App\Modules\Catalog\Http\Requests\Section\SectionStoreRequest;
 use App\Modules\Catalog\Http\Requests\Section\SectionUpdateRequest;
 use App\Modules\Catalog\Http\Resources\SectionResource;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Models\Section;
 use App\Modules\Catalog\Services\SectionService;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Gate;
 
 final readonly class SectionController
@@ -43,14 +41,5 @@ final readonly class SectionController
         $section = $this->service->destroy($section);
 
         return new SectionResource($section);
-    }
-
-    public function reorder(SectionReorderRequest $request, Course $course): AnonymousResourceCollection
-    {
-        Gate::authorize('update', $course);
-
-        $sections = $this->service->reorder($request->toDTO(), $course);
-
-        return SectionResource::collection($sections);
     }
 }

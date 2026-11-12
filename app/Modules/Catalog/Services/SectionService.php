@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Services;
 
-use App\Modules\Catalog\DTO\Section\SectionReorderDTO;
 use App\Modules\Catalog\DTO\Section\SectionStoreDTO;
 use App\Modules\Catalog\DTO\Section\SectionUpdateDTO;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Models\Section;
 use App\Modules\Catalog\Repositories\SectionRepository;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 final readonly class SectionService
 {
@@ -34,28 +31,26 @@ final readonly class SectionService
     }
 
     /**
-     * @return Collection<int, Section> sections in the new order
+     * @return list<int>
      */
-    public function reorder(SectionReorderDTO $DTO, Course $course): Collection
+    public function idsOfCourse(Course $course): array
     {
-        return DB::transaction(function () use ($DTO, $course): Collection {
-            Course::query()->whereKey($course->id)->lockForUpdate()->firstOrFail();
+        return $this->repository->idsOfCourse($course);
+    }
 
-            $current = $this->repository->idsOfCourse($course);
-            $sent = $DTO->ids;
+    /**
+     * @param  list<int>  $ids  all section ids of the course in the new order
+     */
+    public function updatePositions(Course $course, array $ids): void
+    {
+        $this->repository->updatePositions($course, $ids);
+    }
 
-            sort($current);
-            sort($sent);
-
-            if ($current !== $sent) {
-                throw ValidationException::withMessages([
-                    'ids' => 'The ids must contain every section of this course exactly once.',
-                ]);
-            }
-
-            $this->repository->updatePositions($course, $DTO->ids);
-
-            return $this->repository->findAllByCourse($course);
-        });
+    /**
+     * @return Collection<int, Section>
+     */
+    public function findAllByCourseWithLessons(Course $course): Collection
+    {
+        return $this->repository->findAllByCourseWithLessons($course);
     }
 }

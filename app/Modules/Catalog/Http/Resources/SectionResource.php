@@ -23,6 +23,7 @@ final class SectionResource extends JsonResource
             'course_id' => $section->course_id,
             'position' => $section->position,
             'title' => $section->title,
+            'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
         ];
     }
 }
