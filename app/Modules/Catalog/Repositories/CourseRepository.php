@@ -10,6 +10,7 @@ use App\Modules\Catalog\DTO\Course\CourseUpdateDTO;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
 use App\Modules\Catalog\Filters\Course\CourseFilters;
 use App\Modules\Catalog\Models\Course;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 final class CourseRepository
@@ -32,7 +33,16 @@ final class CourseRepository
 
     public function findOneById(int $id): ?Course
     {
-        return Course::where('id', $id)->first();
+        return Course::query()->whereKey($id)->first();
+    }
+
+    /**
+     * @param  list<int>  $ids
+     * @return Collection<int, Course>
+     */
+    public function findManyByIds(array $ids): Collection
+    {
+        return Course::query()->whereKey($ids)->get();
     }
 
     public function store(CourseStoreDTO $DTO): Course

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Providers;
 
+use App\Modules\Catalog\Contracts\CourseDirectoryContract;
 use App\Modules\Catalog\Events\CourseDeclinedEvent;
 use App\Modules\Catalog\Events\CoursePublishedEvent;
 use App\Modules\Catalog\Listeners\CourseMailListener;
 use App\Modules\Catalog\Services\Audit\AuditContract;
 use App\Modules\Catalog\Services\Audit\AuditLogService;
+use App\Modules\Catalog\Services\CourseDirectoryService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +22,7 @@ final class CatalogServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../Config/catalog.php', 'catalog');
 
         $this->app->bind(AuditContract::class, AuditLogService::class);
+        $this->app->bind(CourseDirectoryContract::class, CourseDirectoryService::class);
     }
 
     public function boot(): void
