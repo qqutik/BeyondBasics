@@ -26,7 +26,7 @@ final readonly class LessonController
         return new LessonResource($lesson);
     }
 
-    public function update(LessonUpdateRequest $request, Course $course, Lesson $lesson): LessonResource
+    public function update(LessonUpdateRequest $request, Course $course, Section $section, Lesson $lesson): LessonResource
     {
         Gate::authorize('update', $course);
 
@@ -35,7 +35,7 @@ final readonly class LessonController
         return new LessonResource($lesson);
     }
 
-    public function destroy(Course $course, Lesson $lesson): LessonResource
+    public function destroy(Course $course, Section $section, Lesson $lesson): LessonResource
     {
         Gate::authorize('update', $course);
 

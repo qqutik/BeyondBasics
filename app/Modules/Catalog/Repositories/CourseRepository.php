@@ -52,18 +52,22 @@ final class CourseRepository
 
     public function update(CourseUpdateDTO $DTO, Course $course): Course
     {
-        $course->status = CourseStatusEnum::DRAFT;
         $course->update($DTO->toArray());
 
         return $course;
     }
 
     /**
-     * Locks the course row until the end of the transaction.
+     * Current status, with the course row locked until the end of the transaction.
      */
-    public function lockForUpdate(Course $course): void
+    public function lockStatus(int $courseId): CourseStatusEnum
     {
-        Course::query()->whereKey($course->id)->lockForUpdate()->firstOrFail();
+        return Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail()->status;
+    }
+
+    public function setStatus(int $courseId, CourseStatusEnum $status): void
+    {
+        Course::query()->whereKey($courseId)->update(['status' => $status->value]);
     }
 
     public function destroy(Course $course): Course

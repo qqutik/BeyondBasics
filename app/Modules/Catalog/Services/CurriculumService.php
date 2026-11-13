@@ -18,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 final readonly class CurriculumService
 {
     public function __construct(
-        private CourseService $courses,
+        private CourseDraftService $draft,
         private SectionService $sections,
         private LessonService $lessons,
     ) {}
@@ -33,8 +33,9 @@ final readonly class CurriculumService
     public function update(Course $course, CurriculumDTO $DTO): Collection
     {
         return DB::transaction(function () use ($course, $DTO): Collection {
-            // serializes all structure changes of this course
-            $this->courses->lockForUpdate($course);
+            // locks the course (serializes all structure changes) and puts it back to draft:
+            // a new order is a change students will see, so it is moderated like any other edit
+            $this->draft->markAsDraft($course->id);
 
             if (! $this->sameIds($this->sections->idsOfCourse($course), $DTO->sectionIds())) {
                 throw ValidationException::withMessages([

@@ -10,24 +10,43 @@ use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Models\Section;
 use App\Modules\Catalog\Repositories\SectionRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 final readonly class SectionService
 {
-    public function __construct(private SectionRepository $repository) {}
+    public function __construct(
+        private SectionRepository $repository,
+        private CourseDraftService $draftService,
+    ) {}
 
+    /**
+     * Every change below puts the course back to draft: it has to be moderated again.
+     */
     public function store(SectionStoreDTO $DTO, Course $course): Section
     {
-        return $this->repository->store($DTO, $course);
+        return DB::transaction(function () use ($DTO, $course): Section {
+            $this->draftService->markAsDraft($course->id);
+
+            return $this->repository->store($DTO, $course);
+        });
     }
 
     public function update(SectionUpdateDTO $DTO, Section $section): Section
     {
-        return $this->repository->update($DTO, $section);
+        return DB::transaction(function () use ($DTO, $section): Section {
+            $this->draftService->markAsDraft($section->course_id);
+
+            return $this->repository->update($DTO, $section);
+        });
     }
 
     public function destroy(Section $section): Section
     {
-        return $this->repository->destroy($section);
+        return DB::transaction(function () use ($section): Section {
+            $this->draftService->markAsDraft($section->course_id);
+
+            return $this->repository->destroy($section);
+        });
     }
 
     /**

@@ -17,12 +17,11 @@ final readonly class CourseStatusService
 {
     public function __construct(private CourseService $courseService, private AuditContract $auditContract) {}
 
+    /**
+     * 422 with the list of problems when the course is not complete, see CourseService::assertPublishable().
+     */
     public function submit(Course $course): ?Course
     {
-        if (! $this->assertReadyForReview()) {
-            return throw new \Exception('Course is not ready for review');
-        }
-
         return $this->transition($course, CourseStatusEnum::REVIEW);
     }
 
@@ -73,11 +72,6 @@ final readonly class CourseStatusService
         }
     }
 
-    private function assertReadyForReview(): bool
-    {
-        return true;
-    }
-
     /**
      * @throws \Throwable
      */
@@ -93,10 +87,15 @@ final readonly class CourseStatusService
                 ]);
             }
 
+            // checked on the locked row, inside the transaction: nothing can change the course in between
+            if ($status === CourseStatusEnum::REVIEW) {
+                $this->courseService->assertPublishable($course);
+            }
+
             if ($status === CourseStatusEnum::PUBLISHED) {
                 $version = $this->courseService->generateSnapshot($course);
                 $course->published_version_id = $version->id;
-                $course->published_at = now();
+                $course->published_at = $version->published_at;
             }
 
             $course->status = $status;

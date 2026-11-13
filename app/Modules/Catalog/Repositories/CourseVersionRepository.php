@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Repositories;
 
+use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Models\CourseVersion;
 
 final class CourseVersionRepository
@@ -17,5 +18,22 @@ final class CourseVersionRepository
             ->where('course_id', $courseId)
             ->whereKey($versionId)
             ->first();
+    }
+
+    private function getNextVersionNumber(Course $course): int
+    {
+        return $course->versions()->max('version') + 1;
+    }
+
+    public function create(Course $course, array $snapshot): CourseVersion
+    {
+        $version = new CourseVersion();
+        $version->course_id = $course->id;
+        $version->version = $this->getNextVersionNumber($course);
+        $version->snapshot = $snapshot;
+        $version->published_at = now();
+        $version->save();
+
+        return $version;
     }
 }
