@@ -17,6 +17,12 @@ final readonly class CourseFilters
      */
     private const array FILTERS = [
         UserIdFilter::class,
+        CategoryIdFilter::class,
+        StatusFilter::class,
+        LevelFilter::class,
+        LanguageFilter::class,
+        CurrencyFilter::class,
+        PriceFilter::class,
         TitleFilter::class,
     ];
 

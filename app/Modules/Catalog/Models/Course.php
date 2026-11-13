@@ -123,9 +123,17 @@ final class Course extends Model
         return $this->status === CourseStatusEnum::DRAFT;
     }
 
+    /**
+     * "Is on sale": the course has an approved version and is not archived.
+     *
+     * Deliberately NOT based on status: status describes the draft in the editor. A published course that
+     * the author is editing again is status=draft (or review) but still sells its last approved version.
+     */
     public function isPublished(): bool
     {
-        return $this->status === CourseStatusEnum::PUBLISHED;
+        return $this->published_version_id !== null
+            && $this->status !== CourseStatusEnum::ARCHIVED
+            && ! $this->trashed();
     }
 
     public function isFree(): bool
@@ -139,15 +147,15 @@ final class Course extends Model
     }
 
     /**
-     * Visible in the public catalog.
+     * Visible in the public catalog: same rule as isPublished() (soft-deleted rows are excluded by SoftDeletes).
      *
      * @param  Builder<Course>  $query
      */
     #[Scope]
     protected function published(Builder $query): void
     {
-        $query->where('status', CourseStatusEnum::PUBLISHED->value)
-            ->whereNotNull('published_at');
+        $query->whereNotNull('published_version_id')
+            ->where('status', '!=', CourseStatusEnum::ARCHIVED->value);
     }
 
     /**

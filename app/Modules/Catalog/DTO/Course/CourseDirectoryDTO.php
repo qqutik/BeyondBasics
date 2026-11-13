@@ -29,9 +29,13 @@ final class CourseDirectoryDTO extends BaseDTO
         public readonly ?DateTimeImmutable $publishedAt,
     ) {}
 
+    /**
+     * On sale: has an approved version and is not archived. Not status based: a published course that is
+     * being edited again (status draft / review) still sells its last approved version.
+     */
     public function isPublished(): bool
     {
-        return $this->status === CourseStatusEnum::PUBLISHED && $this->publishedVersionId !== null;
+        return $this->publishedVersionId !== null && $this->status !== CourseStatusEnum::ARCHIVED;
     }
 
     public function isFree(): bool

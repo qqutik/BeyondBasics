@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
 use App\Modules\Catalog\Models\Category;
 use App\Modules\Catalog\Models\Course;
+use App\Modules\Catalog\Models\CourseVersion;
 use App\Modules\Catalog\Models\Section;
 use App\Modules\Identity\Enums\Role;
 use App\Modules\Identity\Models\User;
@@ -99,12 +100,31 @@ describe('courses: view, update, delete', function () {
         getJson("/api/course/{$course->id}", headersOf(userWithRoles(Role::ADMIN)))->assertOk();
     });
 
-    it('shows a published course to everyone logged in', function () {
+    it('shows a course with an approved version to everyone logged in, even while it is edited again', function () {
         $course = courseOf(userWithRoles(Role::AUTHOR), 'public', CourseStatusEnum::PUBLISHED);
-        $course->published_version_id = null;
+        $version = new CourseVersion(['course_id' => $course->id, 'snapshot' => ['sections' => []], 'published_at' => now()]);
+        $version->version = 1;
+        $version->save();
+        $course->published_version_id = $version->id;
+        $course->save();
 
-        // isPublished() is status based today; see the note about published_version_id
-        getJson("/api/course/{$course->id}", headersOf(User::factory()->create()))->assertOk();
+        $viewer = headersOf(User::factory()->create());
+        getJson("/api/course/{$course->id}", $viewer)->assertOk();
+
+        // the author edits it: status goes back to draft, the approved version stays on sale
+        $course->status = CourseStatusEnum::DRAFT;
+        $course->save();
+        getJson("/api/course/{$course->id}", $viewer)->assertOk();
+
+        $course->status = CourseStatusEnum::ARCHIVED;
+        $course->save();
+        getJson("/api/course/{$course->id}", $viewer)->assertForbidden();
+    });
+
+    it('hides a course that was never approved, even with status published', function () {
+        $course = courseOf(userWithRoles(Role::AUTHOR), 'no-version', CourseStatusEnum::PUBLISHED);
+
+        getJson("/api/course/{$course->id}", headersOf(User::factory()->create()))->assertForbidden();
     });
 
     it('does not let another user update or delete a course', function () {
@@ -181,6 +201,24 @@ describe('status workflow', function () {
 
         expect($course->refresh()->status)->toBe(CourseStatusEnum::REVIEW);
     });
+
+    it('takes a course off sale while it is being edited again', function (CourseStatusEnum $editing) {
+        $author = userWithRoles(Role::AUTHOR);
+        $course = courseOf($author, 'on-sale', $editing);
+        $version = new CourseVersion(['course_id' => $course->id, 'snapshot' => ['sections' => []], 'published_at' => now()]);
+        $version->version = 1;
+        $version->save();
+        $course->published_version_id = $version->id;
+        $course->save();
+
+        postJson("/api/course/{$course->id}/archive", [], headersOf($author))->assertOk();
+
+        expect($course->refresh()->status)->toBe(CourseStatusEnum::ARCHIVED)
+            ->and($course->isPublished())->toBeFalse();
+    })->with([
+        'draft' => CourseStatusEnum::DRAFT,
+        'review' => CourseStatusEnum::REVIEW,
+    ]);
 
     it('answers 422, not 500, for a transition that is not allowed', function () {
         $author = userWithRoles(Role::AUTHOR);
