@@ -30,6 +30,33 @@ final class CourseRepository
             ->withQueryString();
     }
 
+    /**
+     * Public catalog: only courses on sale (scope published), with the same filters as the editor list.
+     *
+     * @return LengthAwarePaginator<int, Course>
+     */
+    public function findPublished(CourseFilterDTO $filter): LengthAwarePaginator
+    {
+        return $this->filters
+            ->apply(Course::query()->published(), $filter)
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->paginate($filter->perPage)
+            ->withQueryString();
+    }
+
+    /**
+     * A course on sale by slug, with its current sections and lessons (both relations are ordered by position).
+     */
+    public function findPublishedBySlug(string $slug): ?Course
+    {
+        return Course::query()
+            ->published()
+            ->where('slug', $slug)
+            ->with('sections.lessons')
+            ->first();
+    }
+
     public function findOneById(int $id): ?Course
     {
         return Course::query()->whereKey($id)->first();

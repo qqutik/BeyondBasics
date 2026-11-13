@@ -10,12 +10,17 @@ use App\Modules\Catalog\Events\CourseDeclinedEvent;
 use App\Modules\Catalog\Events\CoursePublishedEvent;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Services\Audit\AuditContract;
+use App\Modules\Catalog\Services\Catalog\CatalogService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 final readonly class CourseStatusService
 {
-    public function __construct(private CourseService $courseService, private AuditContract $auditContract) {}
+    public function __construct(
+        private CourseService $courseService,
+        private AuditContract $auditContract,
+        private CatalogService $catalogService,
+    ) {}
 
     /**
      * 422 with the list of problems when the course is not complete, see CourseService::assertPublishable().
@@ -99,6 +104,11 @@ final readonly class CourseStatusService
 
             if ($event !== null) {
                 event(new $event($course->id));
+            }
+
+            // what is on sale changed: a course was approved or taken off sale
+            if ($status === CourseStatusEnum::PUBLISHED || $status === CourseStatusEnum::ARCHIVED) {
+                $this->catalogService->flush();
             }
 
             return $course;

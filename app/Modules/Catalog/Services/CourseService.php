@@ -14,6 +14,7 @@ use App\Modules\Catalog\Models\Lesson;
 use App\Modules\Catalog\Models\Section;
 use App\Modules\Catalog\Repositories\CourseRepository;
 use App\Modules\Catalog\Repositories\CourseVersionRepository;
+use App\Modules\Catalog\Services\Catalog\CatalogService;
 use App\Modules\Catalog\Traits\SlugTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
@@ -27,6 +28,7 @@ final readonly class CourseService
         private CourseRepository $repository,
         private CourseVersionRepository $courseVersionRepository,
         private SectionService $sectionService,
+        private CatalogService $catalogService,
     ) {}
 
     public function findAll(CourseFilterDTO $DTO): LengthAwarePaginator
@@ -63,12 +65,22 @@ final readonly class CourseService
             return $course;
         }
 
-        return $this->repository->update($DTO, $course);
+        $course = $this->repository->update($DTO, $course);
+
+        // a published course is edited live: the catalog must show the new title / price
+        if ($course->isPublished()) {
+            $this->catalogService->flush();
+        }
+
+        return $course;
     }
 
     public function destroy(Course $course): Course
     {
-        return $this->repository->destroy($course);
+        $course = $this->repository->destroy($course);
+        $this->catalogService->flush();
+
+        return $course;
     }
 
     public function generateSnapshot(Course $course): CourseVersion

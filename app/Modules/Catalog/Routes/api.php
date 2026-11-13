@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Modules\Catalog\Http\Controllers\CatalogController;
 use App\Modules\Catalog\Http\Controllers\CategoryController;
 use App\Modules\Catalog\Http\Controllers\CourseController;
 use App\Modules\Catalog\Http\Controllers\CourseStatusController;
@@ -9,6 +10,12 @@ use App\Modules\Catalog\Http\Controllers\CurriculumController;
 use App\Modules\Catalog\Http\Controllers\LessonController;
 use App\Modules\Catalog\Http\Controllers\SectionController;
 use Illuminate\Support\Facades\Route;
+
+// Public catalog for students: no login, rate limited, only published courses.
+Route::middleware('throttle:120,1')->group(function (): void {
+    Route::get('courses', [CatalogController::class, 'index']);
+    Route::get('courses/{slug}', [CatalogController::class, 'show'])->where('slug', '[a-z0-9-]+');
+});
 
 Route::middleware('auth:api')->group(function (): void {
 
