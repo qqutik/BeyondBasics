@@ -15,6 +15,16 @@ final readonly class CurriculumController
 {
     public function __construct(private CurriculumService $service) {}
 
+    /**
+     * The editor view: all sections with all lessons (including content), owner and admins only.
+     */
+    public function show(Course $course): AnonymousResourceCollection
+    {
+        Gate::authorize('viewCurriculum', $course);
+
+        return SectionResource::collection($this->service->show($course));
+    }
+
     public function update(CurriculumUpdateRequest $request, Course $course): AnonymousResourceCollection
     {
         Gate::authorize('update', $course);

@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Events;
 
-final readonly class CourseDeclinedEvent
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
+
+/**
+ * A course was rejected by a moderator.
+ * Dispatched inside the status transaction; ShouldDispatchAfterCommit delays it until the commit,
+ * so a (queued) listener never sees a course whose change was rolled back or is not visible yet.
+ */
+final readonly class CourseDeclinedEvent implements ShouldDispatchAfterCommit
 {
     public function __construct(public int $courseId) {}
-
 }

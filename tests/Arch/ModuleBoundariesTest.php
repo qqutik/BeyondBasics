@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Modules\Identity\Services\EmailVerificationService;
+use App\Modules\Identity\Services\Auth\EmailVerificationService;
 
 /*
 |--------------------------------------------------------------------------

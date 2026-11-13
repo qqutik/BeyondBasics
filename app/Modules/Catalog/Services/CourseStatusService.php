@@ -6,6 +6,7 @@ namespace App\Modules\Catalog\Services;
 
 use App\Modules\Catalog\DTO\Audit\AuditDTO;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
+use App\Modules\Catalog\Events\CourseArchivedEvent;
 use App\Modules\Catalog\Events\CourseDeclinedEvent;
 use App\Modules\Catalog\Events\CoursePublishedEvent;
 use App\Modules\Catalog\Models\Course;
@@ -32,7 +33,7 @@ final readonly class CourseStatusService
 
     public function archive(Course $course): Course
     {
-        return $this->transition($course, CourseStatusEnum::ARCHIVED);
+        return $this->transition($course, CourseStatusEnum::ARCHIVED, CourseArchivedEvent::class);
     }
 
     public function approve(Course $course, int $adminId): Course
@@ -74,7 +75,7 @@ final readonly class CourseStatusService
     }
 
     /**
-     * @param  class-string<CoursePublishedEvent|CourseDeclinedEvent>|null  $event
+     * @param  class-string<CoursePublishedEvent|CourseDeclinedEvent|CourseArchivedEvent>|null  $event
      */
     private function transition(Course $course, CourseStatusEnum $status, ?string $event = null): Course
     {

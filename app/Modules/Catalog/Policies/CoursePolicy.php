@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Policies;
 
+use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Identity\Contracts\UserDirectoryContract;
 use App\Modules\Identity\Enums\Role;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
@@ -45,8 +47,23 @@ final readonly class CoursePolicy
 
     /**
      * Also guards sections, lessons and curriculum of the course.
+     * An archived course is read-only: restore it first (restore puts it back to draft).
      */
-    public function update(Authenticatable $user, Course $course): bool
+    public function update(Authenticatable $user, Course $course): Response
+    {
+        if (! $this->ownsOrAdmin($user, $course)) {
+            return Response::deny();
+        }
+
+        return $course->status === CourseStatusEnum::ARCHIVED
+            ? Response::deny('An archived course cannot be edited. Restore it first.')
+            : Response::allow();
+    }
+
+    /**
+     * Editor view of sections and lessons with their content. Allowed for archived courses too (read-only).
+     */
+    public function viewCurriculum(Authenticatable $user, Course $course): bool
     {
         return $this->ownsOrAdmin($user, $course);
     }

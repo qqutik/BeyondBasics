@@ -35,7 +35,7 @@ final readonly class CatalogService
         $key = sprintf(
             'catalog:v%d:list:%s:page:%d',
             $this->cacheVersion(),
-            md5((string) json_encode($filter->toArray())),
+            hash('xxh128', (string) json_encode($filter->toArray())),
             Paginator::resolveCurrentPage(),
         );
 

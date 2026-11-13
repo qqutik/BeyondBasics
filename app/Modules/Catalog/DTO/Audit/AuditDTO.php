@@ -8,6 +8,9 @@ use App\Modules\Catalog\DTO\BaseDTO;
 
 final class AuditDTO extends BaseDTO
 {
+    /**
+     * @param  array<string, mixed>|null  $additional  extra context for the log entry
+     */
     public function __construct(
         public readonly ?int $user_id,
         public readonly ?string $message,

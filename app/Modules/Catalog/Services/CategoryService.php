@@ -20,6 +20,9 @@ final readonly class CategoryService
 
     public function __construct(private CategoryRepository $repository) {}
 
+    /**
+     * @return LengthAwarePaginator<int, Category>
+     */
     public function findAll(CategoryFilterDTO $DTO): LengthAwarePaginator
     {
         return $this->repository->findAll($DTO);

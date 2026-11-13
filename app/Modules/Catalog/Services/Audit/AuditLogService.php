@@ -11,6 +11,7 @@ final readonly class AuditLogService implements AuditContract
 {
     public function log(AuditDTO $DTO): void
     {
-        Log::channel($DTO->channel ?? 'daily')->info($DTO->toArray());
+        // PSR-3: the message is a string, structured data goes to the context
+        Log::channel($DTO->channel ?? 'daily')->info($DTO->message ?? 'audit', $DTO->toArray());
     }
 }

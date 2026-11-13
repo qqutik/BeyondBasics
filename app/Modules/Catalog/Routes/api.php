@@ -33,6 +33,7 @@ Route::middleware('auth:api')->group(function (): void {
         Route::post('restore', [CourseStatusController::class, 'restore']);
 
         // the whole order of sections and lessons in one request, see CurriculumUpdateRequest
+        Route::get('curriculum', [CurriculumController::class, 'show']);
         Route::put('curriculum', [CurriculumController::class, 'update']);
 
         Route::post('section', [SectionController::class, 'store']);

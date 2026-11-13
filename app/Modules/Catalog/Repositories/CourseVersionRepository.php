@@ -22,9 +22,14 @@ final class CourseVersionRepository
 
     private function getNextVersionNumber(Course $course): int
     {
-        return $course->versions()->max('version') + 1;
+        $max = $course->versions()->max('version');
+
+        return (is_numeric($max) ? (int) $max : 0) + 1;
     }
 
+    /**
+     * @param  array<string, mixed>  $snapshot
+     */
     public function create(Course $course, array $snapshot): CourseVersion
     {
         $version = new CourseVersion;

@@ -24,6 +24,14 @@ final readonly class CurriculumService
     ) {}
 
     /**
+     * @return Collection<int, Section> sections in order, with their lessons in order
+     */
+    public function show(Course $course): Collection
+    {
+        return $this->sections->findAllByCourseWithLessons($course);
+    }
+
+    /**
      * The request must list exactly all sections and all lessons of the course, each once.
      * A stale structure (another tab added a lesson), a foreign id or a missing one gives 422
      * instead of silently breaking the order.

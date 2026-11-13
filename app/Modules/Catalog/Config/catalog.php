@@ -5,7 +5,8 @@ declare(strict_types=1);
 return [
 
     'pagination' => [
-        'per_page' => (int) env('CATALOG_PER_PAGE', 20),
+        // a module config is not in config/, so env() here would return null once config is cached
+        'per_page' => 20,
         'max_per_page' => 100,
     ],
 

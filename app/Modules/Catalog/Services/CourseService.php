@@ -31,6 +31,9 @@ final readonly class CourseService
         private CatalogService $catalogService,
     ) {}
 
+    /**
+     * @return LengthAwarePaginator<int, Course>
+     */
     public function findAll(CourseFilterDTO $DTO): LengthAwarePaginator
     {
         return $this->repository->findAll($DTO);
@@ -90,6 +93,9 @@ final readonly class CourseService
         return $this->courseVersionRepository->create($course, $this->buildSnapshot($course));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function buildSnapshot(Course $course): array
     {
         $sections = $this->sectionService->findAllByCourseWithLessons($course);

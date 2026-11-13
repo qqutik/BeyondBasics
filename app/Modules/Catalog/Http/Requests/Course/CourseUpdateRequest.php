@@ -23,7 +23,14 @@ final class CourseUpdateRequest extends FormRequest
     {
         $course = $this->route('course');
 
-        return $course instanceof Course && Gate::allows('update', $course);
+        if (! $course instanceof Course) {
+            return false;
+        }
+
+        // authorize() (not allows()) keeps the policy message, e.g. "archived course cannot be edited"
+        Gate::authorize('update', $course);
+
+        return true;
     }
 
     /**
