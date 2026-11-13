@@ -13,10 +13,6 @@ enum CourseStatusEnum: string
     case ARCHIVED = 'archived';
 
     /**
-     * Status describes the draft in the editor; whether the course is on sale is published_version_id.
-     * So archive is allowed from every non-archived state: a course on sale that is being edited again
-     * (draft / review) must still be removable from sale.
-     *
      * @return list<self>
      */
     public function allowedTransitions(): array

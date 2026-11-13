@@ -100,7 +100,7 @@ describe('courses: view, update, delete', function () {
         getJson("/api/course/{$course->id}", headersOf(userWithRoles(Role::ADMIN)))->assertOk();
     });
 
-    it('shows a course with an approved version to everyone logged in, even while it is edited again', function () {
+    it('shows a published course to everyone logged in and keeps it published after an edit', function () {
         $course = courseOf(userWithRoles(Role::AUTHOR), 'public', CourseStatusEnum::PUBLISHED);
         $version = new CourseVersion(['course_id' => $course->id, 'snapshot' => ['sections' => []], 'published_at' => now()]);
         $version->version = 1;
@@ -111,14 +111,22 @@ describe('courses: view, update, delete', function () {
         $viewer = headersOf(User::factory()->create());
         getJson("/api/course/{$course->id}", $viewer)->assertOk();
 
-        // the author edits it: status goes back to draft, the approved version stays on sale
-        $course->status = CourseStatusEnum::DRAFT;
-        $course->save();
+        // edits do not change the status: the course stays on sale
+        $author = User::query()->findOrFail($course->user_id);
+        putJson("/api/course/{$course->id}", ['title' => 'Renamed'], headersOf($author))->assertOk();
+        expect($course->refresh()->status)->toBe(CourseStatusEnum::PUBLISHED);
         getJson("/api/course/{$course->id}", $viewer)->assertOk();
+    });
 
-        $course->status = CourseStatusEnum::ARCHIVED;
+    it('hides an archived course from other users', function () {
+        $course = courseOf(userWithRoles(Role::AUTHOR), 'archived-view', CourseStatusEnum::ARCHIVED);
+        $version = new CourseVersion(['course_id' => $course->id, 'snapshot' => ['sections' => []], 'published_at' => now()]);
+        $version->version = 1;
+        $version->save();
+        $course->published_version_id = $version->id;
         $course->save();
-        getJson("/api/course/{$course->id}", $viewer)->assertForbidden();
+
+        getJson("/api/course/{$course->id}", headersOf(User::factory()->create()))->assertForbidden();
     });
 
     it('hides a course that was never approved, even with status published', function () {
@@ -202,7 +210,7 @@ describe('status workflow', function () {
         expect($course->refresh()->status)->toBe(CourseStatusEnum::REVIEW);
     });
 
-    it('takes a course off sale while it is being edited again', function (CourseStatusEnum $editing) {
+    it('allows archiving from draft and review', function (CourseStatusEnum $editing) {
         $author = userWithRoles(Role::AUTHOR);
         $course = courseOf($author, 'on-sale', $editing);
         $version = new CourseVersion(['course_id' => $course->id, 'snapshot' => ['sections' => []], 'published_at' => now()]);

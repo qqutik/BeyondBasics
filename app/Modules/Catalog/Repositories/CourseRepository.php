@@ -7,7 +7,6 @@ namespace App\Modules\Catalog\Repositories;
 use App\Modules\Catalog\DTO\Course\CourseFilterDTO;
 use App\Modules\Catalog\DTO\Course\CourseStoreDTO;
 use App\Modules\Catalog\DTO\Course\CourseUpdateDTO;
-use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
 use App\Modules\Catalog\Filters\Course\CourseFilters;
 use App\Modules\Catalog\Models\Course;
 use Illuminate\Database\Eloquent\Collection;
@@ -63,16 +62,11 @@ final class CourseRepository
     }
 
     /**
-     * Current status, with the course row locked until the end of the transaction.
+     * Locks the course row until the end of the transaction.
      */
-    public function lockStatus(int $courseId): CourseStatusEnum
+    public function lockForUpdate(Course $course): void
     {
-        return Course::query()->whereKey($courseId)->lockForUpdate()->firstOrFail()->status;
-    }
-
-    public function setStatus(int $courseId, CourseStatusEnum $status): void
-    {
-        Course::query()->whereKey($courseId)->update(['status' => $status->value]);
+        Course::query()->whereKey($course->id)->lockForUpdate()->firstOrFail();
     }
 
     public function destroy(Course $course): Course

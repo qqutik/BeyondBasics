@@ -16,7 +16,6 @@ use App\Modules\Catalog\Repositories\CourseRepository;
 use App\Modules\Catalog\Repositories\CourseVersionRepository;
 use App\Modules\Catalog\Traits\SlugTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -28,7 +27,6 @@ final readonly class CourseService
         private CourseRepository $repository,
         private CourseVersionRepository $courseVersionRepository,
         private SectionService $sectionService,
-        private CourseDraftService $draftService,
     ) {}
 
     public function findAll(CourseFilterDTO $DTO): LengthAwarePaginator
@@ -65,11 +63,7 @@ final readonly class CourseService
             return $course;
         }
 
-        return DB::transaction(function () use ($DTO, $course): Course {
-            $this->draftService->markAsDraft($course->id);
-
-            return $this->repository->update($DTO, $course)->refresh();
-        });
+        return $this->repository->update($DTO, $course);
     }
 
     public function destroy(Course $course): Course
@@ -187,5 +181,13 @@ final readonly class CourseService
                 : null,
             LessonTypeEnum::QUIZ => null,
         };
+    }
+
+    /**
+     * Locks the course row until the end of the current transaction.
+     */
+    public function lockForUpdate(Course $course): void
+    {
+        $this->repository->lockForUpdate($course);
     }
 }

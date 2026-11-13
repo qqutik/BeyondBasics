@@ -30,12 +30,11 @@ final class CourseDirectoryDTO extends BaseDTO
     ) {}
 
     /**
-     * On sale: has an approved version and is not archived. Not status based: a published course that is
-     * being edited again (status draft / review) still sells its last approved version.
+     * On sale: approved (status published) and has a version for students who buy it.
      */
     public function isPublished(): bool
     {
-        return $this->publishedVersionId !== null && $this->status !== CourseStatusEnum::ARCHIVED;
+        return $this->status === CourseStatusEnum::PUBLISHED && $this->publishedVersionId !== null;
     }
 
     public function isFree(): bool

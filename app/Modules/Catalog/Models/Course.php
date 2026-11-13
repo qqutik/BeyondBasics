@@ -124,15 +124,13 @@ final class Course extends Model
     }
 
     /**
-     * "Is on sale": the course has an approved version and is not archived.
-     *
-     * Deliberately NOT based on status: status describes the draft in the editor. A published course that
-     * the author is editing again is status=draft (or review) but still sells its last approved version.
+     * On sale: approved (status published) and has a version for students who buy it.
+     * Edits do not change the status, so a published course stays on sale while the author edits it.
      */
     public function isPublished(): bool
     {
-        return $this->published_version_id !== null
-            && $this->status !== CourseStatusEnum::ARCHIVED
+        return $this->status === CourseStatusEnum::PUBLISHED
+            && $this->published_version_id !== null
             && ! $this->trashed();
     }
 
@@ -154,8 +152,8 @@ final class Course extends Model
     #[Scope]
     protected function published(Builder $query): void
     {
-        $query->whereNotNull('published_version_id')
-            ->where('status', '!=', CourseStatusEnum::ARCHIVED->value);
+        $query->where('status', CourseStatusEnum::PUBLISHED->value)
+            ->whereNotNull('published_version_id');
     }
 
     /**
