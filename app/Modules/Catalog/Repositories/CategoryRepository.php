@@ -9,6 +9,7 @@ use App\Modules\Catalog\DTO\Category\CategoryStoreDTO;
 use App\Modules\Catalog\DTO\Category\CategoryUpdateDTO;
 use App\Modules\Catalog\Filters\Category\CategoryFilters;
 use App\Modules\Catalog\Models\Category;
+use App\Modules\Catalog\Models\Course;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -17,6 +18,14 @@ final class CategoryRepository
     public function __construct(
         private readonly CategoryFilters $filters,
     ) {}
+
+    /**
+     * Includes soft-deleted courses: their rows still reference the category.
+     */
+    public function hasCourses(int $categoryId): bool
+    {
+        return Course::withTrashed()->where('category_id', $categoryId)->exists();
+    }
 
     /**
      * @return LengthAwarePaginator<int, Category>

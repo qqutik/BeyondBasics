@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace App\Modules\Catalog\Http\Requests\Category;
 
 use App\Modules\Catalog\DTO\Category\CategoryStoreDTO;
+use App\Modules\Catalog\Models\Category;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 final class CategoryStoreRequest extends FormRequest
 {
+    /**
+     * Checked before validation: a non-admin gets 403, not a list of validation errors.
+     */
     public function authorize(): bool
     {
-        return Auth::check();
+        return Gate::allows('create', Category::class);
     }
 
     /**

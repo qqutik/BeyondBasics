@@ -8,10 +8,12 @@ use App\Modules\Catalog\DTO\Course\CourseFilterDTO;
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
+use App\Modules\Catalog\Models\Course;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 final class CourseIndexRequest extends FormRequest
@@ -46,23 +48,38 @@ final class CourseIndexRequest extends FormRequest
         ];
     }
 
+    /**
+     * user_id is NOT taken from the client for regular users: an author always sees only own courses
+     * (drafts of others are private). Admins may list everyone or filter by any author.
+     */
     public function toDTO(): CourseFilterDTO
     {
+        $userId = Gate::allows('viewAll', Course::class)
+            ? ($this->filled('user_id') ? $this->integer('user_id') : null)
+            : $this->currentUserId();
+
         return new CourseFilterDTO(
-            user_id: $this->integer('user_id'),
-            category_id: $this->integer('category_id'),
+            user_id: $userId,
+            category_id: $this->filled('category_id') ? $this->integer('category_id') : null,
 
-            title: $this->string('title')->toString() ?? null,
-            subtitle: $this->string('subtitle')->toString() ?? null,
-            description: $this->string('description')->toString() ?? null,
+            title: $this->filled('title') ? $this->string('title')->toString() : null,
+            subtitle: $this->filled('subtitle') ? $this->string('subtitle')->toString() : null,
+            description: $this->filled('description') ? $this->string('description')->toString() : null,
 
-            price: $this->integer('price'),
+            price: $this->filled('price') ? $this->integer('price') : null,
 
-            level: $this->string('level')->toString() ?? null,
-            language: $this->string('language')->toString() ?? null,
-            status: $this->string('status')->toString() ?? null,
+            level: $this->filled('level') ? $this->string('level')->toString() : null,
+            language: $this->filled('language') ? $this->string('language')->toString() : null,
+            status: $this->filled('status') ? $this->string('status')->toString() : null,
 
             perPage: $this->integer('per_page', Config::integer('catalog.pagination.per_page')),
         );
+    }
+
+    private function currentUserId(): int
+    {
+        $id = Auth::id();
+
+        return is_numeric($id) ? (int) $id : 0;
     }
 }

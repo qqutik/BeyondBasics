@@ -45,6 +45,11 @@ final class CourseRepository
         return Course::query()->whereKey($ids)->get();
     }
 
+    public function slugExists(string $slug): bool
+    {
+        return Course::withTrashed()->where('slug', $slug)->exists();
+    }
+
     public function store(CourseStoreDTO $DTO): Course
     {
         return Course::create($DTO->toArray());

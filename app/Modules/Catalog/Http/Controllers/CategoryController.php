@@ -11,6 +11,7 @@ use App\Modules\Catalog\Http\Resources\CategoryResource;
 use App\Modules\Catalog\Models\Category;
 use App\Modules\Catalog\Services\CategoryService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 final class CategoryController
 {
@@ -46,6 +47,8 @@ final class CategoryController
 
     public function destroy(Category $category): CategoryResource
     {
+        Gate::authorize('delete', $category);
+
         $category = $this->categoryService->destroy($category);
 
         return new CategoryResource($category);

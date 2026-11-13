@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Filters\Course;
 
-use App\Modules\Catalog\DTO\Category\CategoryFilterDTO;
 use App\Modules\Catalog\DTO\Course\CourseFilterDTO;
 use App\Modules\Catalog\Filters\QueryFilterInterface;
-use App\Modules\Catalog\Models\Category;
+use App\Modules\Catalog\Models\Course;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class CourseFilters
 {
     /**
-     * @var list<class-string<QueryFilterInterface<Category, CategoryFilterDTO>>>
+     * @var list<class-string<QueryFilterInterface<Course, CourseFilterDTO>>>
      */
     private const array FILTERS = [
+        UserIdFilter::class,
         TitleFilter::class,
     ];
 
@@ -25,8 +25,8 @@ final readonly class CourseFilters
     ) {}
 
     /**
-     * @param  Builder<Category>  $query
-     * @return Builder<Category>
+     * @param  Builder<Course>  $query
+     * @return Builder<Course>
      */
     public function apply(Builder $query, CourseFilterDTO $filter): Builder
     {

@@ -4,80 +4,60 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Http\Controllers;
 
-use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
+use App\Modules\Catalog\Http\Requests\Course\CourseRejectRequest;
 use App\Modules\Catalog\Http\Resources\CourseResource;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Services\CourseStatusService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * Who may do it: CoursePolicy. Whether the transition is allowed from the current status:
+ * CourseStatusService (CourseStatusEnum::allowedTransitions(), checked on the locked row, 422 otherwise).
+ */
 final readonly class CourseStatusController
 {
     public function __construct(private CourseStatusService $service) {}
 
-    public function submit(Course $course)
+    public function submit(Course $course): CourseResource
     {
         Gate::authorize('submit', $course);
 
-        if ($course->status !== CourseStatusEnum::DRAFT) {
-            return throw new \Exception('Course must be in draft status');
-        }
-
-        $course = $this->service->submit($course);
-
-        return new CourseResource($course);
+        return new CourseResource($this->service->submit($course));
     }
 
-    public function archive(Course $course)
+    public function archive(Course $course): CourseResource
     {
         Gate::authorize('archive', $course);
 
-        if ($course->status === CourseStatusEnum::ARCHIVED) {
-            return throw new \Exception('Course is already archived');
-        }
-
-        $course = $this->service->archive($course);
-
-        return new CourseResource($course);
+        return new CourseResource($this->service->archive($course));
     }
 
-    public function approve(Course $course)
+    public function approve(Course $course): CourseResource
     {
         Gate::authorize('approve', $course);
 
-        if ($course->status !== CourseStatusEnum::REVIEW) {
-            return throw new \Exception('Course must be in review status');
-        }
-
-        $course = $this->service->approve($course, Auth::user()->id);
-
-        return new CourseResource($course);
+        return new CourseResource($this->service->approve($course, $this->currentUserId()));
     }
 
-    public function reject(Request $request, Course $course)
+    public function reject(CourseRejectRequest $request, Course $course): CourseResource
     {
         Gate::authorize('reject', $course);
 
-        if ($course->status !== CourseStatusEnum::REVIEW) {
-            return throw new \Exception('Course must be in review status');
-        }
-
-        $course = $this->service->reject($course, Auth::user()->id, $request->reason);
-
-        return new CourseResource($course);
+        return new CourseResource($this->service->reject($course, $this->currentUserId(), $request->reason()));
     }
 
-    public function restore(Course $course)
+    public function restore(Course $course): CourseResource
     {
         Gate::authorize('restore', $course);
 
-        if ($course->status !== CourseStatusEnum::ARCHIVED) {
-            return throw new \Exception('Course must be in archive status');
-        }
+        return new CourseResource($this->service->restore($course));
+    }
 
-        $course = $this->service->restore($course);
+    private function currentUserId(): int
+    {
+        $id = Auth::id();
 
-        return new CourseResource($course);
+        return is_numeric($id) ? (int) $id : 0;
     }
 }

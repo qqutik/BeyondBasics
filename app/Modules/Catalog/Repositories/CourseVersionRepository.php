@@ -27,7 +27,7 @@ final class CourseVersionRepository
 
     public function create(Course $course, array $snapshot): CourseVersion
     {
-        $version = new CourseVersion();
+        $version = new CourseVersion;
         $version->course_id = $course->id;
         $version->version = $this->getNextVersionNumber($course);
         $version->snapshot = $snapshot;

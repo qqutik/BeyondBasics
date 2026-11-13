@@ -15,7 +15,7 @@ final class CourseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        /** @var Course $category */
+        /** @var Course $course */
         $course = $this->resource;
 
         return [

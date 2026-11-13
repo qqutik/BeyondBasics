@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Modules\Identity\Enums\Role;
+use App\Modules\Identity\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\TestResponse;
 
 use function Pest\Laravel\postJson;
@@ -84,4 +87,18 @@ function jwtGuard(): JWTGuard
     }
 
     return $guard;
+}
+
+/**
+ * A user with the given roles, written straight into user_roles (no RoleService events in tests).
+ */
+function userWithRoles(Role ...$roles): User
+{
+    $user = User::factory()->create();
+
+    foreach ($roles as $role) {
+        DB::table('user_roles')->insert(['user_id' => $user->id, 'role' => $role->value, 'granted_by' => null, 'granted_at' => now()]);
+    }
+
+    return $user;
 }

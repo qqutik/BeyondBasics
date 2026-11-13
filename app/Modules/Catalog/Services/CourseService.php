@@ -17,6 +17,7 @@ use App\Modules\Catalog\Repositories\CourseVersionRepository;
 use App\Modules\Catalog\Traits\SlugTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 final readonly class CourseService
@@ -45,7 +46,12 @@ final readonly class CourseService
         $slug = $this->generateSlug($DTO->title);
 
         if ($slug === '') {
-            throw ValidationException::withMessages(['name' => 'The title must contain at least one letter or digit.']);
+            throw ValidationException::withMessages(['title' => 'The title must contain at least one letter or digit.']);
+        }
+
+        // slug is unique across all courses (deleted ones too): two authors may pick the same title
+        if ($this->repository->slugExists($slug)) {
+            $slug .= '-'.Str::lower(Str::random(6));
         }
 
         $DTO->setSlug($slug);

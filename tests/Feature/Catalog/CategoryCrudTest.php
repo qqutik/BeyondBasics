@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Catalog\Models\Category;
+use App\Modules\Identity\Enums\Role;
 use App\Modules\Identity\Models\User;
 
 use function Pest\Laravel\assertDatabaseCount;
@@ -22,7 +23,8 @@ function categoryFixture(): array
     $root = Category::query()->create(['name' => 'Programming', 'slug' => 'programming', 'position' => 1, 'is_active' => true]);
     $child = Category::query()->create(['name' => 'PHP', 'slug' => 'php', 'parent_id' => $root->id, 'position' => 1, 'is_active' => true]);
 
-    return ['headers' => bearer(apiLogin(User::factory()->create()->email)['access_token']), 'root' => $root, 'child' => $child];
+    // categories are changed only by admins (CategoryPolicy)
+    return ['headers' => bearer(apiLogin(userWithRoles(Role::ADMIN)->email)['access_token']), 'root' => $root, 'child' => $child];
 }
 
 describe('update (partial)', function () {

@@ -73,6 +73,13 @@ final readonly class CategoryService
             ]);
         }
 
+        // courses.category_id is restrictOnDelete: without this check the DB error becomes a 500
+        if ($this->repository->hasCourses($category->id)) {
+            throw ValidationException::withMessages([
+                'category' => 'The category has courses. Move them to another category first.',
+            ]);
+        }
+
         return $this->repository->destroy($category);
     }
 

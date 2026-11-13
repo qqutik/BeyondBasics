@@ -11,6 +11,7 @@ use App\Modules\Catalog\Http\Resources\CourseResource;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Services\CourseService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 final readonly class CourseController
 {
@@ -25,6 +26,8 @@ final readonly class CourseController
 
     public function show(Course $course): CourseResource
     {
+        Gate::authorize('view', $course);
+
         $course = $this->service->findOneById($course->id);
 
         return new CourseResource($course);
@@ -46,6 +49,8 @@ final readonly class CourseController
 
     public function destroy(Course $course): CourseResource
     {
+        Gate::authorize('delete', $course);
+
         $course = $this->service->destroy($course);
 
         return new CourseResource($course);

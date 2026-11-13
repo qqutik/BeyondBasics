@@ -8,16 +8,22 @@ use App\Modules\Catalog\DTO\Course\CourseUpdateDTO;
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
+use App\Modules\Catalog\Models\Course;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 final class CourseUpdateRequest extends FormRequest
 {
+    /**
+     * Checked before validation: someone else gets 403, not a list of validation errors.
+     */
     public function authorize(): bool
     {
-        return Auth::check();
+        $course = $this->route('course');
+
+        return $course instanceof Course && Gate::allows('update', $course);
     }
 
     /**

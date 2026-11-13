@@ -15,7 +15,9 @@ Route::middleware('auth:api')->group(function (): void {
     Route::apiResource('category', CategoryController::class);
     Route::apiResource('course', CourseController::class);
 
-    Route::prefix('course/{course}')->group(function (): void {
+    // scopeBindings: {section} must belong to {course} and {lesson} to {section}, otherwise 404.
+    // Without it PUT course/{own}/section/{foreign} passes the policy on the own course and edits a foreign section.
+    Route::prefix('course/{course}')->scopeBindings()->group(function (): void {
 
         Route::post('submit', [CourseStatusController::class, 'submit']);
         Route::post('archive', [CourseStatusController::class, 'archive']);

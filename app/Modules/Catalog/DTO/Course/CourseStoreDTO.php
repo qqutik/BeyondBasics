@@ -15,14 +15,13 @@ final class CourseStoreDTO extends BaseDTO
         public readonly int $category_id,
 
         public readonly string $title,
-        public readonly string $subtitle,
-        public readonly string $description,
+        public readonly ?string $subtitle,
+        public readonly ?string $description,
 
         public readonly int $price,
         public readonly string $currency,
         public readonly string $level,
         public readonly string $language,
-        public readonly string $status,
     ) {}
 
     public function setSlug(string $slug): self

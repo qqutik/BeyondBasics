@@ -20,37 +20,33 @@ final readonly class CourseStatusService
     /**
      * 422 with the list of problems when the course is not complete, see CourseService::assertPublishable().
      */
-    public function submit(Course $course): ?Course
+    public function submit(Course $course): Course
     {
         return $this->transition($course, CourseStatusEnum::REVIEW);
     }
 
-    public function archive(Course $course): ?Course
+    public function archive(Course $course): Course
     {
         return $this->transition($course, CourseStatusEnum::ARCHIVED);
     }
 
-    public function approve(Course $course, int $adminId): ?Course
+    public function approve(Course $course, int $adminId): Course
     {
         $result = $this->transition($course, CourseStatusEnum::PUBLISHED, CoursePublishedEvent::class);
-        if ($result) {
-            $this->generateLog($adminId, 'Course approved', $course);
-        }
+        $this->generateLog($adminId, 'Course approved', $result);
 
         return $result;
     }
 
-    public function reject(Course $course, int $adminId, string $reason): ?Course
+    public function reject(Course $course, int $adminId, string $reason): Course
     {
         $result = $this->transition($course, CourseStatusEnum::DECLINED, CourseDeclinedEvent::class);
-        if ($result) {
-            $this->generateLog($adminId, 'Course rejected: '.$reason, $course);
-        }
+        $this->generateLog($adminId, 'Course rejected: '.$reason, $result);
 
         return $result;
     }
 
-    public function restore(Course $course): ?Course
+    public function restore(Course $course): Course
     {
         return $this->transition($course, CourseStatusEnum::DRAFT);
     }
@@ -73,9 +69,9 @@ final readonly class CourseStatusService
     }
 
     /**
-     * @throws \Throwable
+     * @param  class-string<CoursePublishedEvent|CourseDeclinedEvent>|null  $event
      */
-    private function transition(Course $course, CourseStatusEnum $status, $event = null): ?Course
+    private function transition(Course $course, CourseStatusEnum $status, ?string $event = null): Course
     {
         return DB::transaction(function () use ($course, $status, $event) {
 
