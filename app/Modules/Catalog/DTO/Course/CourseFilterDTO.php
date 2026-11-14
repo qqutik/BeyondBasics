@@ -7,8 +7,8 @@ namespace App\Modules\Catalog\DTO\Course;
 use App\Modules\Catalog\DTO\BaseDTO;
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
+use App\Shared\Enums\CurrencyEnum;
 
 /**
  * Filters of the course list. null = the filter is not applied.

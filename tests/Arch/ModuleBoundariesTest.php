@@ -71,6 +71,23 @@ arch('code outside modules does not use module internals')
     ->expect(['App\\Http', 'App\\Providers', 'App\\Console'])
     ->not->toUse(array_merge(...array_map(internalNamespacesOf(...), moduleNames())));
 
+/*
+| Shared kernel (app/Shared): Money, CurrencyEnum, base exceptions. Every module may use it directly,
+| it depends on nothing in app/Modules and holds no domain logic, models, tables or facades.
+*/
+arch('shared kernel does not depend on modules')
+    ->expect('App\\Shared')
+    ->not->toUse('App\\Modules');
+
+arch('shared kernel has no Eloquent, database or facades')
+    ->expect('App\\Shared')
+    ->not->toUse(['Illuminate\\Database', 'Illuminate\\Support\\Facades']);
+
+arch('shared value objects are final and readonly')
+    ->expect('App\\Shared\\ValueObjects')
+    ->toBeFinal()
+    ->toBeReadonly();
+
 arch('application code uses strict types')
     ->expect('App')
     ->toUseStrictTypes();

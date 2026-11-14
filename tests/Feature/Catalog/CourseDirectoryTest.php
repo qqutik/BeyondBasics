@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Modules\Catalog\Contracts\CourseDirectoryContract;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\Lesson\LessonTypeEnum;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Models\CourseVersion;
 use App\Modules\Identity\Models\User;
+use App\Shared\Enums\CurrencyEnum;
 
 function directory(): CourseDirectoryContract
 {
@@ -93,8 +93,9 @@ it('returns the price in minor units with the currency', function () {
 
     $price = directory()->getPrice($course->id);
 
-    expect($price?->amount)->toBe(2999)
-        ->and($price?->currency)->toBe(CurrencyEnum::EUR)
+    expect($price?->price->amount())->toBe(2999)
+        ->and($price?->price->currency())->toBe(CurrencyEnum::EUR)
+        ->and($price?->isFree())->toBeFalse()
         ->and($price?->formatted())->toBe('€29.99')
         ->and(directory()->getPrice(999999))->toBeNull();
 });

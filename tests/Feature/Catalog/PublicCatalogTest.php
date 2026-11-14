@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Modules\Catalog\DTO\Course\CourseUpdateDTO;
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
 use App\Modules\Catalog\Enums\Lesson\LessonTypeEnum;
 use App\Modules\Catalog\Models\Category;
@@ -17,6 +16,7 @@ use App\Modules\Catalog\Services\Catalog\CatalogService;
 use App\Modules\Catalog\Services\CourseService;
 use App\Modules\Catalog\Services\CourseStatusService;
 use App\Modules\Identity\Models\User;
+use App\Shared\Enums\CurrencyEnum;
 
 use function Pest\Laravel\getJson;
 

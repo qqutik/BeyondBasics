@@ -6,8 +6,8 @@ namespace App\Modules\Catalog\Http\Requests\Catalog;
 
 use App\Modules\Catalog\DTO\Course\CourseFilterDTO;
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
+use App\Shared\Enums\CurrencyEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Config;

@@ -6,9 +6,9 @@ namespace App\Modules\Catalog\Models;
 
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
 use App\Modules\Catalog\Policies\CoursePolicy;
+use App\Shared\Enums\CurrencyEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Scope;

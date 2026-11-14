@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
 use App\Modules\Catalog\Models\Category;
 use App\Modules\Catalog\Models\Course;
 use App\Modules\Identity\Enums\Role;
+use App\Shared\Enums\CurrencyEnum;
 
 use function Pest\Laravel\getJson;
 

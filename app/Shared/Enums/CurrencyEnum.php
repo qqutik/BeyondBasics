@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Catalog\Enums;
+namespace App\Shared\Enums;
 
 /**
  * Supported currencies, ISO 4217 codes (upper case, matches the DB CHECK on courses.currency).

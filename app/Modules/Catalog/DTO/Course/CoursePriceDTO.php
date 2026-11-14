@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace App\Modules\Catalog\DTO\Course;
 
 use App\Modules\Catalog\DTO\BaseDTO;
-use App\Modules\Catalog\Enums\CurrencyEnum;
+use App\Shared\ValueObjects\Money;
 
 /**
- * Money is never a float: amount in minor units + currency. 1999 USD = $19.99.
+ * Current price of a course. Money is never a float: minor units + currency, 1999 USD = $19.99.
  */
 final class CoursePriceDTO extends BaseDTO
 {
     public function __construct(
-        public readonly int $amount,
-        public readonly CurrencyEnum $currency,
+        public readonly Money $price,
     ) {}
 
     public function isFree(): bool
     {
-        return $this->amount === 0;
+        return $this->price->isZero();
     }
 
     /**
@@ -27,6 +26,6 @@ final class CoursePriceDTO extends BaseDTO
      */
     public function formatted(): string
     {
-        return $this->currency->format($this->amount);
+        return $this->price->format();
     }
 }

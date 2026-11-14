@@ -13,6 +13,7 @@ use App\Modules\Catalog\Models\Course;
 use App\Modules\Catalog\Models\CourseVersion;
 use App\Modules\Catalog\Repositories\CourseRepository;
 use App\Modules\Catalog\Repositories\CourseVersionRepository;
+use App\Shared\ValueObjects\Money;
 
 /**
  * Implementation of the public Catalog contract. Maps models to DTOs at the module boundary.
@@ -47,7 +48,7 @@ final readonly class CourseDirectoryService implements CourseDirectoryContract
     {
         $course = $this->courseRepository->findOneById($courseId);
 
-        return $course !== null ? new CoursePriceDTO($course->price, $course->currency) : null;
+        return $course !== null ? new CoursePriceDTO(Money::of($course->price, $course->currency)) : null;
     }
 
     public function getPublishedStructure(int $courseId, int $versionId): ?CourseStructureDTO

@@ -6,7 +6,7 @@ namespace App\Modules\Catalog\DTO\Course;
 
 use App\Modules\Catalog\DTO\BaseDTO;
 use App\Modules\Catalog\Enums\Course\CourseStatusEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
+use App\Shared\Enums\CurrencyEnum;
 use DateTimeImmutable;
 
 /**

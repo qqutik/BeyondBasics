@@ -6,9 +6,9 @@ namespace App\Modules\Catalog\Http\Requests\Course;
 
 use App\Modules\Catalog\DTO\Course\CourseUpdateDTO;
 use App\Modules\Catalog\Enums\Course\CourseLevelEnum;
-use App\Modules\Catalog\Enums\CurrencyEnum;
 use App\Modules\Catalog\Enums\LanguageEnum;
 use App\Modules\Catalog\Models\Course;
+use App\Shared\Enums\CurrencyEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
