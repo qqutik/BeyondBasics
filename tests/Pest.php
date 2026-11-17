@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Modules\Billing\Enums\CouponTypeEnum;
+use App\Modules\Billing\Models\Coupon;
 use App\Modules\Identity\Enums\Role;
 use App\Modules\Identity\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 
 use function Pest\Laravel\postJson;
@@ -101,4 +104,21 @@ function userWithRoles(Role ...$roles): User
     }
 
     return $user;
+}
+
+/**
+ * A saved Billing coupon: 10% off any course unless $attributes say otherwise.
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+function billingCoupon(array $attributes = []): Coupon
+{
+    $coupon = new Coupon(array_merge([
+        'code' => 'TEST'.Str::upper(Str::random(8)),
+        'type' => CouponTypeEnum::PERCENT,
+        'value' => 10,
+    ], $attributes));
+    $coupon->save();
+
+    return $coupon;
 }

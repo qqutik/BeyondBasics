@@ -99,19 +99,22 @@ it('allows a new pending order once the previous one is no longer pending', func
 });
 
 it('counts a coupon once per user while it is held or used', function (OrderStatusEnum $previous) {
-    $first = billingOrder(['coupon_id' => 7], $previous);
+    $couponId = billingCoupon()->id;
+    $first = billingOrder(['coupon_id' => $couponId], $previous);
 
-    billingOrder(['user_id' => $first->user_id, 'coupon_id' => 7]);
+    // The second order is not pending, so it cannot trip orders_one_pending_per_user instead of the coupon index.
+    billingOrder(['user_id' => $first->user_id, 'coupon_id' => $couponId], OrderStatusEnum::SUCCESS);
 })->with([
     'pending' => OrderStatusEnum::PENDING,
     'success' => OrderStatusEnum::SUCCESS,
     'refunded' => OrderStatusEnum::REFUNDED,
-])->throws(QueryException::class);
+])->throws(QueryException::class, 'orders_coupon_once_per_user');
 
 it('releases the coupon when the order was abandoned', function (OrderStatusEnum $previous) {
-    $first = billingOrder(['coupon_id' => 7], $previous);
+    $couponId = billingCoupon()->id;
+    $first = billingOrder(['coupon_id' => $couponId], $previous);
 
-    $next = billingOrder(['user_id' => $first->user_id, 'coupon_id' => 7]);
+    $next = billingOrder(['user_id' => $first->user_id, 'coupon_id' => $couponId]);
 
     expect($next->exists)->toBeTrue();
 })->with([
@@ -121,8 +124,9 @@ it('releases the coupon when the order was abandoned', function (OrderStatusEnum
 ]);
 
 it('lets different users use the same coupon', function () {
-    billingOrder(['coupon_id' => 7]);
-    $other = billingOrder(['coupon_id' => 7]);
+    $couponId = billingCoupon()->id;
+    billingOrder(['coupon_id' => $couponId]);
+    $other = billingOrder(['coupon_id' => $couponId]);
 
     expect($other->exists)->toBeTrue();
 });
